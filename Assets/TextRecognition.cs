@@ -29,8 +29,19 @@ public class TextRecognition : MonoBehaviour
     }
 
     void runOCR(string filename) {
-        string scriptPath = Path.Combine(Application.dataPath, "ocr.py");
-        PythonRunner.SpawnClient(scriptPath, true, new string[1]{filename});
+        //string scriptPath = Path.Combine(Application.dataPath, "ocr.py");
+        //PythonRunner.SpawnClient(scriptPath, true, new string[1]{filename});
+
+        PythonRunner.RunString(@"
+        import UnityEngine;
+        import cv2;
+        import pytesseract;
+        pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract.exe';
+        custom_oem_psm_config = r'--oem 3 --psm 6';
+        img = cv2.imread('" + filename + @"');
+        img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB);
+        text = pytesseract.image_to_string(img_rgb, config=custom_oem_psm_config);
+        UnityEnginer.Debug.Log(text)")
     }
 
     void Update()
